@@ -522,7 +522,7 @@ module.exports = {
             editType: 'none',
             description: 'Specifies whether new shapes are drawn as open or closed paths.'
         },
-        drawshape: { // similar to selectshape
+        drawshape: {
             valType: 'enumerated',
             values: ['box', 'circular'],
             dflt: 'box',

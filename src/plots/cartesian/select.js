@@ -186,7 +186,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         if(isRectMode) {
             var isLine = isDrawMode && !drwStyle.closed;
             var isEllipse = (
-                (isSelectMode && fullLayout.selectshape === 'circular') ||
+                (isSelectMode) ||
                 (isDrawMode && drwStyle.drawshape === 'circular' && drwStyle.closed)
             );
             var isLineOrEllipse = isLine || isEllipse; // cases with two start & end positions
