@@ -172,7 +172,13 @@ function getButtonGroups(gd) {
         // fullLayout._has('ternary') ||
         fullLayout._has('cartesian')
     ) {
-        dragModeGroup.push('sizedraw', 'freedraw');
+        dragModeGroup.push(
+            'closedfreedraw',
+            'openfreedraw',
+            'linedraw',
+            'rectdraw',
+            'ellipsedraw'
+        );
     }
 
     addGroup(dragModeGroup);

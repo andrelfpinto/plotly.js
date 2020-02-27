@@ -47,10 +47,13 @@ module.exports = {
         values: [
             'zoom',
             'pan',
-            'sizedraw',
-            'freedraw',
             'select',
             'lasso',
+            'closedfreedraw',
+            'openfreedraw',
+            'linedraw',
+            'rectdraw',
+            'ellipsedraw',
             'orbit',
             'turntable',
             false

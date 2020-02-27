@@ -486,6 +486,7 @@ plots.supplyDefaults = function(gd, opts) {
     // we should try to come up with a better solution when implementing
     // https://github.com/plotly/plotly.js/issues/1851
     if(oldFullLayout._zoomlayer && !gd._dragging) {
+        oldFullLayout._zoomlayer.selectAll('.outline-controllers').remove();
         oldFullLayout._zoomlayer.selectAll('.select-outline').remove();
     }
 
@@ -1525,8 +1526,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('newshape.editable');
     coerce('newshape.drawdirection');
-    coerce('newshape.drawshape');
-    coerce('newshape.closed');
     coerce('newshape.order');
     coerce('newshape.layer');
     coerce('newshape.fillcolor');

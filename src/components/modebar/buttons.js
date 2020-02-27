@@ -134,21 +134,48 @@ modeBarButtons.lasso2d = {
     click: handleCartesian
 };
 
-modeBarButtons.freedraw = {
-    name: 'freedraw',
-    title: function(gd) { return _(gd, 'Freeform Draw'); },
+modeBarButtons.closedfreedraw = {
+    name: 'closedfreedraw',
+    title: function(gd) { return _(gd, 'Draw Polygon'); },
     attr: 'dragmode',
-    val: 'freedraw',
-    icon: Icons.freedraw,
+    val: 'closedfreedraw',
+    icon: Icons.closedfreedraw,
     click: handleCartesian
 };
 
-modeBarButtons.sizedraw = {
-    name: 'sizedraw',
-    title: function(gd) { return _(gd, 'Geometric Draw'); },
+modeBarButtons.openfreedraw = {
+    name: 'openfreedraw',
+    title: function(gd) { return _(gd, 'Draw Polyline'); },
     attr: 'dragmode',
-    val: 'sizedraw',
-    icon: Icons.sizedraw,
+    val: 'openfreedraw',
+    icon: Icons.openfreedraw,
+    click: handleCartesian
+};
+
+modeBarButtons.linedraw = {
+    name: 'linedraw',
+    title: function(gd) { return _(gd, 'Draw Line'); },
+    attr: 'dragmode',
+    val: 'linedraw',
+    icon: Icons.linedraw,
+    click: handleCartesian
+};
+
+modeBarButtons.rectdraw = {
+    name: 'rectdraw',
+    title: function(gd) { return _(gd, 'Draw Rectangle'); },
+    attr: 'dragmode',
+    val: 'rectdraw',
+    icon: Icons.rectdraw,
+    click: handleCartesian
+};
+
+modeBarButtons.ellipsedraw = {
+    name: 'ellipsedraw',
+    title: function(gd) { return _(gd, 'Draw Ellipse'); },
+    attr: 'dragmode',
+    val: 'ellipsedraw',
+    icon: Icons.ellipsedraw,
     click: handleCartesian
 };
 

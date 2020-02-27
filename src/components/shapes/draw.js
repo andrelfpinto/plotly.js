@@ -293,6 +293,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         renderVisualCues(shapeLayer, shapeOptions);
         deactivateClipPathTemporarily(shapePath, shapeOptions, gd);
         dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
+        dragOptions.altKey = evt.altKey;
     }
 
     function endDrag() {
@@ -307,22 +308,19 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     function abortDrag() {
         removeVisualCues(shapeLayer);
 
-        if(shapeOptions.editable) {
+        if(shapeOptions.editable && dragOptions.altKey) {
+            var fullLayout = gd._fullLayout;
             var element = dragOptions.element;
             var id = +element.getAttribute('data-index');
 
-            if(confirm('Delete clicked shape?')) {
-                var fullLayout = gd._fullLayout;
-
-                var newShapes = [];
-                for(var q = 0; q < fullLayout.shapes.length; q++) {
-                    if(q !== id) newShapes.push(fullLayout.shapes[q]._input);
-                }
-
-                Registry.call('relayout', gd, {
-                    shapes: newShapes
-                });
+            var newShapes = [];
+            for(var q = 0; q < fullLayout.shapes.length; q++) {
+                if(q !== id) newShapes.push(fullLayout.shapes[q]._input);
             }
+
+            Registry.call('relayout', gd, {
+                shapes: newShapes
+            });
         }
     }
 

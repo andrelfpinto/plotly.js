@@ -515,24 +515,6 @@ module.exports = {
             editType: 'none',
             description: 'Specifies whether new shapes are drawn below or above previous shapes in the `layer`.'
         },
-        closed: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'info',
-            editType: 'none',
-            description: 'Specifies whether new shapes are drawn as open or closed paths.'
-        },
-        drawshape: {
-            valType: 'enumerated',
-            values: ['box', 'circular'],
-            dflt: 'box',
-            role: 'info',
-            editType: 'none',
-            description: [
-                'Specifies whether ellipses are drawn instead of rectangles,',
-                'when using *sizedraw* `dragmode`.'
-            ].join(' ')
-        },
         drawdirection: {
             valType: 'enumerated',
             role: 'info',
@@ -540,8 +522,8 @@ module.exports = {
             dflt: 'diagonal',
             editType: 'none',
             description: [
-                'When `dragmode` is set to *sizedraw*, this limits the drag to be',
-                'horizontal, vertical or diagonal.',
+                'When `dragmode` is set to *rectdraw*, *linedraw* or *ellipsedraw*',
+                'this limits the drag to be horizontal, vertical or diagonal.',
                 'Using *diagonal* there is no limit e.g. in drawing lines in any direction.',
                 '*ortho* limits the draw to be either horizontal or vertical.',
                 '*horizontal* allows horizontal extend.',
