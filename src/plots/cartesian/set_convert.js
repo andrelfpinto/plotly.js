@@ -174,65 +174,56 @@ module.exports = function setConvert(ax, fullLayout) {
         if(isNumeric(v)) return +v;
     }
 
-    // TODO move if-statements in setConvert scope for perf !!
+    // include 2 fractional digits on pixel, for PDF zooming etc
+    function _l2p(v, m, b) { return d3.round(b + m * v, 2); }
 
-    function l2p(v) {
+    function _p2l(px, m, b) { return (px - b) / m; }
+
+    var l2p = function l2p(v) {
         if(!isNumeric(v)) return BADNUM;
+        return _l2p(v, ax._m, ax._b);
+    };
 
-        var m = ax._m;
-        var b = ax._b;
+    var p2l = function(px) {
+        return _p2l(px, ax._m, ax._b);
+    };
 
-        // TODO we could also handle the 'inside-breaks' cases here
-        // as opposed to during d2c
-        // but that might make autorange much harder to compute !
-
-        if(ax.breaks) {
-            var i, bnds;
-            m = ax._m2;
-            b = ax._B[0];
-
-            if(axLetter === 'y') {
-                m *= -1;
-                for(i = 0; i < ax._breaks.length; i++) {
-                    bnds = [ax._breaks[i].min, ax._breaks[i].max];
-                    if(v <= bnds[0]) b = ax._B[i + 1];
+    if(ax.breaks) {
+        if(axLetter === 'y') {
+            l2p = function(v) {
+                if(!isNumeric(v)) return BADNUM;
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    if(v <= ax._breaks[i].min) b = ax._B[i + 1];
                 }
-            } else {
-                for(i = 0; i < ax._breaks.length; i++) {
-                    bnds = [ax._breaks[i].min, ax._breaks[i].max];
-                    if(v >= bnds[1]) b = ax._B[i + 1];
+                return _l2p(v, -ax._m2, b);
+            };
+            p2l = function(px) {
+                if(!isNumeric(px)) return BADNUM;
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    if(px >= l2p(ax._breaks[i].min)) b = ax._B[i + 1];
                 }
-            }
+                return _p2l(px, -ax._m2, b);
+            };
+        } else {
+            l2p = function(v) {
+                if(!isNumeric(v)) return BADNUM;
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    if(v >= ax._breaks[i].max) b = ax._B[i + 1];
+                }
+                return _l2p(v, ax._m2, b);
+            };
+            p2l = function(px) {
+                if(!isNumeric(px)) return BADNUM;
+                var b = ax._B[0];
+                for(var i = 0; i < ax._breaks.length; i++) {
+                    if(px >= l2p(ax._breaks[i].max)) b = ax._B[i + 1];
+                }
+                return _p2l(px, ax._m2, b);
+            };
         }
-
-        // include 2 fractional digits on pixel, for PDF zooming etc
-        return d3.round(b + m * v, 2);
-    }
-
-    function p2l(px) {
-        var m = ax._m;
-        var b = ax._b;
-
-        if(ax.breaks) {
-            var i, bnds;
-            m = ax._m2;
-            b = ax._B[0];
-
-            if(axLetter === 'y') {
-                m *= -1;
-                for(i = 0; i < ax._breaks.length; i++) {
-                    bnds = [ax._breaks[i].min, ax._breaks[i].max];
-                    if(px >= ax.l2p(bnds[0])) b = ax._B[i + 1];
-                }
-            } else {
-                for(i = 0; i < ax._breaks.length; i++) {
-                    bnds = [ax._breaks[i].min, ax._breaks[i].max];
-                    if(px >= ax.l2p(bnds[1])) b = ax._B[i + 1];
-                }
-            }
-        }
-
-        return (px - b) / m;
     }
 
     // conversions among c/l/p are fairly simple - do them together for all axis types
