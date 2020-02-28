@@ -204,7 +204,9 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(!isNumeric(px)) return BADNUM;
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
-                    if(px >= l2p(ax._breaks[i].min)) b = ax._B[i + 1];
+                    var brk = ax._breaks[i];
+                    if(px >= brk.pmin) b = ax._B[i + 1];
+                    else if(px < brk.pmax) break;
                 }
                 return _p2l(px, -ax._m2, b);
             };
@@ -223,7 +225,9 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(!isNumeric(px)) return BADNUM;
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
-                    if(px >= l2p(ax._breaks[i].max)) b = ax._B[i + 1];
+                    var brk = ax._breaks[i];
+                    if(px >= brk.pmax) b = ax._B[i + 1];
+                    else if(px < brk.pmin) break;
                 }
                 return _p2l(px, ax._m2, b);
             };
@@ -547,27 +551,36 @@ module.exports = function setConvert(ax, fullLayout) {
         ax._B = [];
 
         if(ax.breaks) {
-            var i, bnds;
+            var i, brk;
 
             ax._breaks = ax.locateBreaks(rl0, rl1);
 
             for(i = 0; i < ax._breaks.length; i++) {
-                bnds = [ax._breaks[i].min, ax._breaks[i].max];
-                ax._lBreaks += (bnds[1] - bnds[0]);
+                brk = ax._breaks[i];
+                ax._lBreaks += (brk.max - brk.min);
             }
 
             ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks);
 
             if(axLetter === 'y') {
                 ax._breaks.reverse();
+                // N.B. top to bottom (negative coord, positive px direction)
                 ax._B.push(ax._m2 * rl1);
             } else {
                 ax._B.push(-ax._m2 * rl0);
             }
 
             for(i = 0; i < ax._breaks.length; i++) {
-                bnds = [ax._breaks[i].min, ax._breaks[i].max];
-                ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (bnds[1] - bnds[0]));
+                brk = ax._breaks[i];
+                ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min));
+            }
+
+            // fill pixel (i.e. 'p') min/max here,
+            // to not have to loop through the _breaks twice during `p2l`
+            for(i = 0; i < ax._breaks.length; i++) {
+                brk = ax._breaks[i];
+                brk.pmin = l2p(brk.min);
+                brk.pmax = l2p(brk.max);
             }
         }
 
