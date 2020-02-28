@@ -214,7 +214,16 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         return g;
     }
 
+    function shouldSkipEdits() {
+        return !!gd._fullLayout._drawing;
+    }
+
     function updateDragMode(evt) {
+        if(shouldSkipEdits()) {
+            dragMode = null;
+            return;
+        }
+
         if(isLine) {
             if(evt.target.tagName === 'path') {
                 dragMode = 'move';
@@ -245,6 +254,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function startDrag(evt) {
+        if(shouldSkipEdits()) return;
+
         // setup update strings and initial values
         if(xPixelSized) {
             xAnchor = x2p(shapeOptions.xanchor);
@@ -297,6 +308,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function endDrag() {
+        if(shouldSkipEdits()) return;
+
         setCursor(shapePath);
         removeVisualCues(shapeLayer);
 
@@ -306,6 +319,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function abortDrag() {
+        if(shouldSkipEdits()) return;
+
         removeVisualCues(shapeLayer);
 
         if(shapeOptions.editable && dragOptions.altKey) {

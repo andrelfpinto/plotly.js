@@ -588,6 +588,8 @@ function multiTester(list) {
 }
 
 function coerceSelectionsCache(evt, gd, dragOptions) {
+    gd._fullLayout._drawing = false;
+
     var fullLayout = gd._fullLayout;
     var plotinfo = dragOptions.plotinfo;
     var dragmode = dragOptions.dragmode;
@@ -632,6 +634,8 @@ function clearSelectionsCache(dragOptions) {
                 onPaper: false // TODO: we could enable this to draw on paper coordinates
             });
         }
+
+        gd._fullLayout._drawing = false;
     }
 
     plotinfo.selection = {};
@@ -731,6 +735,8 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
     var dragmode = dragOptions.dragmode;
     var isDrawMode = drawMode(dragmode);
     var isOpenMode = openMode(dragmode);
+
+    if(isDrawMode) gd._fullLayout._drawing = true;
 
     var paths = [];
     for(var k = 0; k < polygons.length; k++) {
@@ -1650,6 +1656,8 @@ function clearSelect(gd) {
         zoomLayer.selectAll('.outline-controllers').remove();
         zoomLayer.selectAll('.select-outline').remove();
     }
+
+    fullLayout._drawing = false;
 }
 
 module.exports = {
