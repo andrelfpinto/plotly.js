@@ -301,6 +301,7 @@ module.exports = {
             // little misleading in my opinion.
             //
             values: ['%w', '%H', ''],
+            dflt: '',
             role: 'info',
             editType: 'calc',
             description: [
@@ -312,6 +313,29 @@ module.exports = {
                 '%H - hour (24-hour clock) as a decimal number [00,23].',
                 '..',
                 '\'\'\ - ...'
+            ].join(' ')
+        },
+
+        values: {
+            valType: 'info_array',
+            freeLength: true,
+            role: 'info',
+            editType: 'calc',
+            items: {
+                valType: 'any',
+                editType: 'calc'
+            },
+            description: [
+                '...'
+            ].join(' ')
+        },
+        dvalue: {
+            valType: 'number',  // could become 'any' to add support for 'months', 'years'
+            role: 'info',
+            editType: 'calc',
+            min: 0,
+            description: [
+                '...'
             ].join(' ')
         },
 
