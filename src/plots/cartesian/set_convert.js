@@ -593,45 +593,63 @@ module.exports = function setConvert(ax, fullLayout) {
                 var op = brk.operation;
                 var op0 = op.charAt(0);
                 var op1 = op.charAt(1);
-                var doesCrossPeriod = false;
 
-                switch(brk.pattern) {
-                    case '%w':
-                        bnds = Lib.simpleMap(brk.bounds, cleanNumber);
-                        b0 = bnds[0];
-                        b1 = bnds[1];
-                        vb = (new Date(v)).getUTCDay();
-                        if(bnds[0] > bnds[1]) doesCrossPeriod = true;
-                        break;
-                    case '%H':
-                        bnds = Lib.simpleMap(brk.bounds, cleanNumber);
-                        b0 = bnds[0];
-                        b1 = bnds[1];
-                        vb = (new Date(v)).getUTCHours();
-                        if(bnds[0] > bnds[1]) doesCrossPeriod = true;
-                        break;
-                    default:
-                        bnds = Lib.simpleMap(brk.bounds, ax.d2c);
-                        if(bnds[0] <= bnds[1]) {
+                if(brk.bounds) {
+                    var doesCrossPeriod = false;
+
+                    switch(brk.pattern) {
+                        case '%w':
+                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
                             b0 = bnds[0];
                             b1 = bnds[1];
-                        } else {
-                            b0 = bnds[1];
-                            b1 = bnds[0];
-                        }
-                        vb = v;
-                }
+                            vb = (new Date(v)).getUTCDay();
+                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                            break;
+                        case '%H':
+                            bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                            b0 = bnds[0];
+                            b1 = bnds[1];
+                            vb = (new Date(v)).getUTCHours();
+                            if(bnds[0] > bnds[1]) doesCrossPeriod = true;
+                            break;
+                        default:
+                            bnds = Lib.simpleMap(brk.bounds, ax.d2c);
+                            if(bnds[0] <= bnds[1]) {
+                                b0 = bnds[0];
+                                b1 = bnds[1];
+                            } else {
+                                b0 = bnds[1];
+                                b1 = bnds[0];
+                            }
+                            vb = v;
+                    }
 
-                if(doesCrossPeriod) {
-                    if(
-                        (op0 === '(' ? vb > b0 : vb >= b0) ||
-                        (op1 === ')' ? vb < b1 : vb <= b1)
-                    ) return BADNUM;
+                    if(doesCrossPeriod) {
+                        if(
+                            (op0 === '(' ? vb > b0 : vb >= b0) ||
+                            (op1 === ')' ? vb < b1 : vb <= b1)
+                        ) return BADNUM;
+                    } else {
+                        if(
+                            (op0 === '(' ? vb > b0 : vb >= b0) &&
+                            (op1 === ')' ? vb < b1 : vb <= b1)
+                        ) return BADNUM;
+                    }
                 } else {
-                    if(
-                        (op0 === '(' ? vb > b0 : vb >= b0) &&
-                        (op1 === ')' ? vb < b1 : vb <= b1)
-                    ) return BADNUM;
+                    var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
+                    var onOpenBound = false;
+
+                    for(var j = 0; j < vals.length; j++) {
+                        b0 = vals[j];
+                        b1 = b0 + brk.dvalue;
+                        if(
+                            (op0 === '(' ? v > b0 : v >= b0) &&
+                            (op1 === ')' ? v < b1 : v <= b1)
+                        ) return BADNUM;
+
+                        if(onOpenBound && op0 === '(' && v === b0) return BADNUM;
+                        onOpenBound = op1 === ')' && v === b1;
+                    }
                 }
             }
         }
@@ -676,83 +694,92 @@ module.exports = function setConvert(ax, fullLayout) {
                 var op0 = op.charAt(0);
                 var op1 = op.charAt(1);
 
-                if(brk.pattern) {
-                    bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                if(brk.bounds) {
+                    if(brk.pattern) {
+                        bnds = Lib.simpleMap(brk.bounds, cleanNumber);
 
-                    // r0 value as date
-                    var r0Date = new Date(r0);
-                    // r0 value for break pattern
-                    var r0Pattern;
-                    // delta between r0 and first break in break pattern values
-                    var r0PatternDelta;
-                    // delta between break bounds in ms
-                    var bndDelta;
-                    // step in ms between breaks
-                    var step;
-                    // tracker to position bounds
-                    var t;
+                        // r0 value as date
+                        var r0Date = new Date(r0);
+                        // r0 value for break pattern
+                        var r0Pattern;
+                        // delta between r0 and first break in break pattern values
+                        var r0PatternDelta;
+                        // delta between break bounds in ms
+                        var bndDelta;
+                        // step in ms between breaks
+                        var step;
+                        // tracker to position bounds
+                        var t;
 
-                    switch(brk.pattern) {
-                        case '%w':
-                            b0 = bnds[0] + (op0 === '(' ? 1 : 0);
-                            b1 = bnds[1];
-                            r0Pattern = r0Date.getUTCDay();
-                            r0PatternDelta = b0 - r0Pattern;
-                            bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
-                            // TODO clean this up ... with tests !!
-                            if(op0 === '[' && op1 === ']') bndDelta += ONEDAY;
-                            step = 7 * ONEDAY;
+                        switch(brk.pattern) {
+                            case '%w':
+                                b0 = bnds[0] + (op0 === '(' ? 1 : 0);
+                                b1 = bnds[1];
+                                r0Pattern = r0Date.getUTCDay();
+                                r0PatternDelta = b0 - r0Pattern;
+                                bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
+                                // TODO clean this up ... with tests !!
+                                if(op0 === '[' && op1 === ']') bndDelta += ONEDAY;
+                                step = 7 * ONEDAY;
 
-                            if(r0PatternDelta > 0) {
-                                t = r0 + r0PatternDelta * ONEDAY -
-                                    r0Date.getUTCHours() * ONEHOUR -
-                                    r0Date.getUTCMinutes() * ONEMIN -
-                                    r0Date.getUTCSeconds() * ONESEC -
-                                    r0Date.getUTCMilliseconds();
-                            } else {
-                                // TODO should we start from r0
-                                // or have the breaks start before the range?
-                            }
-                            break;
-                        case '%H':
+                                if(r0PatternDelta > 0) {
+                                    t = r0 + r0PatternDelta * ONEDAY -
+                                        r0Date.getUTCHours() * ONEHOUR -
+                                        r0Date.getUTCMinutes() * ONEMIN -
+                                        r0Date.getUTCSeconds() * ONESEC -
+                                        r0Date.getUTCMilliseconds();
+                                } else {
+                                    // TODO should we start from r0
+                                    // or have the breaks start before the range?
+                                }
+                                break;
+                            case '%H':
+                                b0 = bnds[0];
+                                b1 = bnds[1];
+                                r0Pattern = r0Date.getUTCHours();
+                                r0PatternDelta = b0 - r0Pattern;
+                                bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
+                                step = ONEDAY;
+
+                                if(r0PatternDelta > 0) {
+                                    t = r0 + r0PatternDelta * ONEHOUR -
+                                        r0Date.getUTCMinutes() * ONEMIN -
+                                        r0Date.getUTCSeconds() * ONESEC -
+                                        r0Date.getUTCMilliseconds();
+                                } else {
+                                    // TODO should we start from r0
+                                    // or have the breaks start before the range?
+                                }
+                                break;
+                        }
+
+                        // TODO we need to remove decimal (most often found
+                        // in auto ranges) for this to work correctly,
+                        // should this be Math.floor, Math.ceil or
+                        // Math.round ??
+
+                        while(t <= r1) {
+                            addBreak(Math.floor(t), Math.floor(t + bndDelta));
+                            t += step;
+                        }
+                    } else {
+                        bnds = Lib.simpleMap(brk.bounds, ax.r2l);
+                        if(bnds[0] <= bnds[1]) {
                             b0 = bnds[0];
                             b1 = bnds[1];
-                            r0Pattern = r0Date.getUTCHours();
-                            r0PatternDelta = b0 - r0Pattern;
-                            bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
-                            step = ONEDAY;
-
-                            if(r0PatternDelta > 0) {
-                                t = r0 + r0PatternDelta * ONEHOUR -
-                                    r0Date.getUTCMinutes() * ONEMIN -
-                                    r0Date.getUTCSeconds() * ONESEC -
-                                    r0Date.getUTCMilliseconds();
-                            } else {
-                                // TODO should we start from r0
-                                // or have the breaks start before the range?
-                            }
-                            break;
-                    }
-
-                    // TODO we need to remove decimal (most often found
-                    // in auto ranges) for this to work correctly,
-                    // should this be Math.floor, Math.ceil or
-                    // Math.round ??
-
-                    while(t <= r1) {
-                        addBreak(Math.floor(t), Math.floor(t + bndDelta));
-                        t += step;
+                        } else {
+                            b0 = bnds[1];
+                            b1 = bnds[0];
+                        }
+                        addBreak(b0, b1);
                     }
                 } else {
-                    bnds = Lib.simpleMap(brk.bounds, ax.r2l);
-                    if(bnds[0] <= bnds[1]) {
-                        b0 = bnds[0];
-                        b1 = bnds[1];
-                    } else {
-                        b0 = bnds[1];
-                        b1 = bnds[0];
+                    var vals = Lib.simpleMap(brk.values, ax.d2c);
+                    for(var j = 0; j < vals.length; j++) {
+                        b0 = vals[j];
+                        b1 = b0 + brk.dvalue;
+                        addBreak(b0, b1);
                     }
-                    addBreak(b0, b1);
                 }
             }
         }

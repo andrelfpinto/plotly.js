@@ -13,6 +13,7 @@ var Axes = require('@src/plots/cartesian/axes');
 var Fx = require('@src/components/fx');
 var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
 var BADNUM = require('@src/constants/numerical').BADNUM;
+var ONEDAY = require('@src/constants/numerical').ONEDAY;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -4156,6 +4157,48 @@ describe('Test axes', function() {
             });
 
             // TODO more pattern values !!
+
+            it('should discard coords within [values[i], values[i] + dvalue] bounds', function() {
+                var x = [
+                    // Thursday
+                    '2020-01-02 08:00', '2020-01-02 16:00',
+                    // Friday
+                    '2020-01-03 08:00', '2020-01-03 16:00',
+                    // Saturday
+                    '2020-01-04 08:00', '2020-01-04 16:00',
+                    // Sunday
+                    '2020-01-05 08:00', '2020-01-05 16:00',
+                    // Monday
+                    '2020-01-06 08:00', '2020-01-06 16:00',
+                    // Tuesday
+                    '2020-01-07 08:00', '2020-01-07 16:00'
+                ];
+
+                _calc({x: x}, {
+                    xaxis: {
+                        breaks: [{values: ['2020-01-04', '2020-01-05'], dvalue: ONEDAY}],
+                    }
+                });
+                _assert('two values', [
+                    1577952000000, 1577980800000,
+                    1578038400000, 1578067200000,
+                    BADNUM, BADNUM,
+                    BADNUM, BADNUM,
+                    1578297600000, 1578326400000,
+                    1578384000000, 1578412800000
+                ]);
+            });
+
+            it('should discard coords equal to two consecutive open values bounds', function() {
+                _calc({
+                    x: [1, 2, 3, 4, 5]
+                }, {
+                    xaxis: {
+                        breaks: [{ values: [2, 3], dvalue: 1, operation: '()' }]
+                    }
+                });
+                _assert('', [1, 2, BADNUM, 4, 5]);
+            });
 
             it('should adapt coords generated from x0/dx about breaks', function() {
                 _calc({
