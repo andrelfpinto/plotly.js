@@ -1036,7 +1036,7 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis4.breaks).toBeUndefined();
         });
 
-        it('should only coerce breaks *directive* on date axes', function() {
+        it('should only coerce breaks *pattern* on date axes', function() {
             // TODO
             // ... not sure about this one,
             // maybe  we should always coerce it with some default value ''
@@ -4010,7 +4010,7 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         breaks: [
-                            {directive: '%w', bounds: [6, 0], operation: '[]'}
+                            {pattern: '%w', bounds: [6, 0], operation: '[]'}
                         ]
                     }
                 });
@@ -4019,7 +4019,7 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         breaks: [
-                            {directive: '%w', bounds: [5, 1], operation: '()'}
+                            {pattern: '%w', bounds: [5, 1], operation: '()'}
                         ]
                     }
                 });
@@ -4028,7 +4028,7 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         breaks: [
-                            {directive: '%w', bounds: [6, 1], operation: '[)'}
+                            {pattern: '%w', bounds: [6, 1], operation: '[)'}
                         ]
                     }
                 });
@@ -4037,7 +4037,7 @@ describe('Test axes', function() {
                 _calc({x: x}, {
                     xaxis: {
                         breaks: [
-                            {directive: '%w', bounds: [5, 0], operation: '(]'}
+                            {pattern: '%w', bounds: [5, 0], operation: '(]'}
                         ]
                     }
                 });
@@ -4057,7 +4057,7 @@ describe('Test axes', function() {
                 }, {
                     xaxis: {
                         breaks: [
-                            {directive: '%H', bounds: [17, 8]}
+                            {pattern: '%H', bounds: [17, 8]}
                         ]
                     }
                 });
@@ -4071,7 +4071,7 @@ describe('Test axes', function() {
                 ]);
             });
 
-            // TODO more directive values !!
+            // TODO more pattern values !!
 
             it('should adapt coords generated from x0/dx about breaks', function() {
                 _calc({
@@ -4299,7 +4299,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {directive: '%w', bounds: [5, 1]}
+                        {pattern: '%w', bounds: [5, 1]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4314,7 +4314,7 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {directive: '%H', bounds: [17, 8]}
+                        {pattern: '%H', bounds: [17, 8]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4339,8 +4339,8 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
-                        {directive: '%w', bounds: [5, 1]},
-                        {directive: '%H', bounds: [17, 8]}
+                        {pattern: '%w', bounds: [5, 1]},
+                        {pattern: '%H', bounds: [17, 8]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
                 })
@@ -4364,8 +4364,8 @@ describe('Test axes', function() {
                     // TODO in reverse order, this does not work !
 
                     // gd.layout.xaxis.breaks = [
-                    //     {directive: '%H', bounds: [17, 8]},
-                    //     {directive: '%w', bounds: [5, 1]}
+                    //     {pattern: '%H', bounds: [17, 8]},
+                    //     {pattern: '%w', bounds: [5, 1]}
                     // ];
                     // return Plotly.react(gd, gd.data, gd.layout);
                 })

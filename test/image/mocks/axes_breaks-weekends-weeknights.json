@@ -15,12 +15,12 @@
     "xaxis": {
       "breaks": [
         {
-          "directive": "%w",
+          "pattern": "%w",
           "bounds": [ 6, 0 ],
           "operation": "[]"
         },
         {
-          "directive": "%H",
+          "pattern": "%H",
           "bounds": [ 16, 8 ],
           "operation": "()"
         }

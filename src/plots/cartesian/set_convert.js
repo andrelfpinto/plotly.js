@@ -595,7 +595,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 var op1 = op.charAt(1);
                 var doesCrossPeriod = false;
 
-                switch(brk.directive) {
+                switch(brk.pattern) {
                     case '%w':
                         bnds = Lib.simpleMap(brk.bounds, cleanNumber);
                         b0 = bnds[0];
@@ -676,15 +676,15 @@ module.exports = function setConvert(ax, fullLayout) {
                 var op0 = op.charAt(0);
                 var op1 = op.charAt(1);
 
-                if(brk.directive) {
+                if(brk.pattern) {
                     bnds = Lib.simpleMap(brk.bounds, cleanNumber);
 
                     // r0 value as date
                     var r0Date = new Date(r0);
-                    // r0 value for break directive
-                    var r0Directive;
-                    // delta between r0 and first break in break directive values
-                    var r0DirectiveDelta;
+                    // r0 value for break pattern
+                    var r0Pattern;
+                    // delta between r0 and first break in break pattern values
+                    var r0PatternDelta;
                     // delta between break bounds in ms
                     var bndDelta;
                     // step in ms between breaks
@@ -692,19 +692,19 @@ module.exports = function setConvert(ax, fullLayout) {
                     // tracker to position bounds
                     var t;
 
-                    switch(brk.directive) {
+                    switch(brk.pattern) {
                         case '%w':
                             b0 = bnds[0] + (op0 === '(' ? 1 : 0);
                             b1 = bnds[1];
-                            r0Directive = r0Date.getUTCDay();
-                            r0DirectiveDelta = b0 - r0Directive;
+                            r0Pattern = r0Date.getUTCDay();
+                            r0PatternDelta = b0 - r0Pattern;
                             bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
                             // TODO clean this up ... with tests !!
                             if(op0 === '[' && op1 === ']') bndDelta += ONEDAY;
                             step = 7 * ONEDAY;
 
-                            if(r0DirectiveDelta > 0) {
-                                t = r0 + r0DirectiveDelta * ONEDAY -
+                            if(r0PatternDelta > 0) {
+                                t = r0 + r0PatternDelta * ONEDAY -
                                     r0Date.getUTCHours() * ONEHOUR -
                                     r0Date.getUTCMinutes() * ONEMIN -
                                     r0Date.getUTCSeconds() * ONESEC -
@@ -717,13 +717,13 @@ module.exports = function setConvert(ax, fullLayout) {
                         case '%H':
                             b0 = bnds[0];
                             b1 = bnds[1];
-                            r0Directive = r0Date.getUTCHours();
-                            r0DirectiveDelta = b0 - r0Directive;
+                            r0Pattern = r0Date.getUTCHours();
+                            r0PatternDelta = b0 - r0Pattern;
                             bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
                             step = ONEDAY;
 
-                            if(r0DirectiveDelta > 0) {
-                                t = r0 + r0DirectiveDelta * ONEHOUR -
+                            if(r0PatternDelta > 0) {
+                                t = r0 + r0PatternDelta * ONEHOUR -
                                     r0Date.getUTCMinutes() * ONEMIN -
                                     r0Date.getUTCSeconds() * ONESEC -
                                     r0Date.getUTCMilliseconds();

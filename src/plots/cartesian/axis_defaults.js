@@ -147,7 +147,7 @@ function breaksDefaults(itemIn, itemOut, containerOut) {
         coerce('operation');
 
         if(containerOut.type === 'date') {
-            coerce('directive');
+            coerce('pattern');
         }
 
         // TODO if break bounds are bigger than the (set) range,

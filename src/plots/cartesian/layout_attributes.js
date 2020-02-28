@@ -273,21 +273,21 @@ module.exports = {
             ].join(' ')
         },
 
-        directive: {
+        pattern: {
             valType: 'enumerated',
             // Same d3-format symbols as used in tickformat
             //
             // example:
-            // - { directive: '%w', bounds: [6, 1] }
+            // - { pattern: '%w', bounds: [6, 0] }
             //   breaks form Saturday to Monday (i.e. skips the weekends)
-            // - { directive: '%H, bounds: [17, 8] }
+            // - { pattern: '%H, bounds: [17, 8] }
             //   breaks from 5pm to 8am (i.e. skips non-work hours)
             //
             // Problem: how to allow users to set minutes, seconds, etc in their
             // break bounds?
             //
-            // Idea: add a few "combo" values for `directive` e.g.
-            //   { directive: '%H:%M:%S', bounds: ['17:30:05', '8:08:01'] }
+            // Idea: add a few "combo" values for `pattern` e.g.
+            //   { pattern: '%H:%M:%S', bounds: ['17:30:05', '8:08:01'] }
             //
             // Alternative: Highcharts uses settings `from`, `to` together
             // with a `repeat` e.g.
@@ -360,7 +360,7 @@ module.exports = {
         },
 
         // To complete https://github.com/plotly/plotly.js/issues/1382
-        // we need `enabled`, `directive`, `bounds` to work on *date* axes
+        // we need `enabled`, `pattern`, `bounds` to work on *date* axes
         //
         // To complete https://github.com/plotly/plotly.js/issues/4210
         // we additionally need `gap` and make this work on *linear*, and
