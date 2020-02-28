@@ -194,7 +194,9 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(!isNumeric(v)) return BADNUM;
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
-                    if(v <= ax._breaks[i].min) b = ax._B[i + 1];
+                    var brk = ax._breaks[i];
+                    if(v <= brk.min) b = ax._B[i + 1];
+                    else if(v > brk.max) break;
                 }
                 return _l2p(v, -ax._m2, b);
             };
@@ -211,7 +213,9 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(!isNumeric(v)) return BADNUM;
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
-                    if(v >= ax._breaks[i].max) b = ax._B[i + 1];
+                    var brk = ax._breaks[i];
+                    if(v >= brk.max) b = ax._B[i + 1];
+                    else if(v < brk.min) break;
                 }
                 return _l2p(v, ax._m2, b);
             };
