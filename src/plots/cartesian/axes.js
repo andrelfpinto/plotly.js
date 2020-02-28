@@ -563,6 +563,8 @@ axes.calcTicks = function calcTicks(ax) {
     // find the first tick
     ax._tmin = axes.tickFirst(ax);
 
+    // if(ax.breaks) console.log(ax._id, Lib.ms2DateTime(ax._tmin))
+
     // add a tiny bit so we get ticks which may have rounded out
     var startTick = rng[0] * 1.0001 - rng[1] * 0.0001;
     var endTick = rng[1] * 1.0001 - rng[0] * 0.0001;
