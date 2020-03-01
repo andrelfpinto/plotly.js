@@ -168,7 +168,7 @@ function getButtonGroups(gd) {
         dragModeGroup.push('select2d', 'lasso2d');
     }
     if(
-        // fullLayout._has('mapbox') ||
+        fullLayout._has('mapbox') ||
         // fullLayout._has('ternary') ||
         fullLayout._has('cartesian')
     ) {

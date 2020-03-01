@@ -56,16 +56,6 @@ function p2r(ax, v) {
     }
 }
 
-/*
-function map2r(axes, vals) {
-    var v = [+vals[0], +vals[1]];
-    return [
-        axes[0].p2r(v),
-        axes[1].p2r(v)
-    ];
-}
-*/
-
 function axValue(ax) {
     var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
     return function(v) { return p2r(ax, v[index]); };
@@ -630,9 +620,7 @@ function clearSelectionsCache(dragOptions) {
         var outlines = zoomLayer.selectAll('.select-outline-' + plotinfo.id);
         if(outlines) {
             // add shape
-            addShape(outlines, dragOptions, {
-                onPaper: false // TODO: we could enable this to draw on paper coordinates
-            });
+            addNewShapes(outlines, dragOptions);
         }
 
         gd._fullLayout._drawing = false;
@@ -750,7 +738,7 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
 
     // add controllers
     var rShapeController = MINSELECT * 0.75; // smaller shape buttons
-    var rVertexController = MINSELECT * 2; // bigger vertex buttons
+    var rVertexController = MINSELECT * 1.5; // bigger vertex buttons
     var shapeDragOptions;
     var vertexDragOptions;
     var indexI; // cell index
@@ -1079,21 +1067,11 @@ function writePaths(paths, isOpenMode) {
     return paths.length > 0 ? 'M' + paths.join('M') + (isOpenMode ? '' : 'Z') : 'M0,0Z';
 }
 
-function isMap(plotinfo) {
-    return !!(
-        plotinfo &&
-        plotinfo.id &&
-        plotinfo.id.indexOf('mapbox') === 0
-    );
-}
-
 function readPaths(str, size, plotinfo) {
     var allParts = str
         .replace('Z', '') // remove Z from end
         .substring(1) // remove M from start
         .split('M');
-
-    var map = isMap(plotinfo);
 
     var allPaths = [];
     for(var i = 0; i < allParts.length; i++) {
@@ -1102,23 +1080,18 @@ function readPaths(str, size, plotinfo) {
         var path = [];
         for(var j = 0; j < part.length; j++) {
             var pos = part[j].split(',');
-            var x = pos[0];
-            var y = pos[1];
+            var x = +pos[0];
+            var y = +pos[1];
 
-            /* if(map) {
-                path.push(map2r(
-                    [plotinfo.xaxis, plotinfo.yaxis],
-                    [x, y]
-                ));
-            } else */ if(plotinfo && !map) {
+            if(plotinfo.domain) {
                 path.push([
-                    p2r(plotinfo.xaxis, x),
-                    p2r(plotinfo.yaxis, y)
+                    plotinfo.domain.x[0] + x / size.w,
+                    plotinfo.domain.y[1] - y / size.h
                 ]);
             } else {
                 path.push([
-                    x / size.w,
-                    1 - y / size.h
+                    p2r(plotinfo.xaxis, x),
+                    p2r(plotinfo.yaxis, y)
                 ]);
             }
         }
@@ -1311,15 +1284,15 @@ function ellipseOver(pos) {
     };
 }
 
-function addShape(outlines, dragOptions, opts) {
+function addNewShapes(outlines, dragOptions) {
     if(!outlines.length) return;
     var gd = dragOptions.gd;
     var drwStyle = gd._fullLayout.newshape;
     var isOpenMode = openMode(dragOptions.dragmode);
-    var onPaper = opts.onPaper;
     var plotinfo = dragOptions.plotinfo;
     var xaxis = plotinfo.xaxis;
     var yaxis = plotinfo.yaxis;
+    var onPaper = plotinfo.domain;
     var dragmode = dragOptions.dragmode;
 
     var e = outlines[0][0]; // pick first
@@ -1329,9 +1302,7 @@ function addShape(outlines, dragOptions, opts) {
     var newShapes = [];
     var fullLayout = gd._fullLayout;
 
-    var map = isMap(plotinfo);
-
-    var polygons = readPaths(d, fullLayout._size, (map || onPaper) ? undefined : plotinfo);
+    var polygons = readPaths(d, fullLayout._size, plotinfo);
 
     for(var i = 0; i < polygons.length; i++) {
         var cell = polygons[i];
@@ -1341,8 +1312,8 @@ function addShape(outlines, dragOptions, opts) {
         var shape = {
             editable: false,
 
-            xref: (map || onPaper) ? 'paper' : xaxis._id,
-            yref: (map || onPaper) ? 'paper' : yaxis._id,
+            xref: onPaper ? 'paper' : xaxis._id,
+            yref: onPaper ? 'paper' : yaxis._id,
 
             layer: drwStyle.layer,
             opacity: drwStyle.opacity,

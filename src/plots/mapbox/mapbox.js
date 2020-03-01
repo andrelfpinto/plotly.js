@@ -385,12 +385,10 @@ proto.createFramework = function(fullLayout) {
     // create mock x/y axes for draw shape & hover routines
     self.xaxis = {
         _id: 'x',
-        p2r: function(v) { return self.map.unproject(v).lng; },
         c2p: function(v) { return self.project(v).x; }
     };
     self.yaxis = {
         _id: 'y',
-        p2r: function(v) { return self.map.unproject(v).lat; },
         c2p: function(v) { return self.project(v).y; }
     };
 
@@ -586,6 +584,7 @@ proto.updateFx = function(fullLayout) {
         gd: gd,
         plotinfo: {
             id: self.id,
+            domain: fullLayout[self.id].domain,
             xaxis: self.xaxis,
             yaxis: self.yaxis,
             fillRangeItems: fillRangeItems

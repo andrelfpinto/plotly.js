@@ -509,6 +509,7 @@ proto.initInteractions = function() {
         gd: gd,
         plotinfo: {
             id: _this.id,
+            domain: gd._fullLayout[_this.id].domain,
             xaxis: _this.xaxis,
             yaxis: _this.yaxis
         },
