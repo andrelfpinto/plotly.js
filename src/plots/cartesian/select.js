@@ -750,7 +750,7 @@ function displayOutlines(polygons, outlines, dragOptions, nCalls) {
 
     // add controllers
     var rShapeController = MINSELECT * 0.75; // smaller shape buttons
-    var rVertexController = MINSELECT * 1.5; // bigger vertex buttons
+    var rVertexController = MINSELECT * 2; // bigger vertex buttons
     var shapeDragOptions;
     var vertexDragOptions;
     var indexI; // cell index
@@ -1339,7 +1339,7 @@ function addShape(outlines, dragOptions, opts) {
         if(len < 2) continue;
 
         var shape = {
-            editable: drwStyle.editable,
+            editable: false,
 
             xref: (map || onPaper) ? 'paper' : xaxis._id,
             yref: (map || onPaper) ? 'paper' : yaxis._id,

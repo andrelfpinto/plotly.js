@@ -108,6 +108,41 @@ function drawOne(gd, index) {
         if(gd._context.edits.shapePosition || options.editable) {
             setupDragElement(gd, path, options, index, shapeLayer);
         }
+
+        path.style('pointer-events', 'all');
+        path.node().addEventListener('click', handleClick);
+        path.node().addEventListener('dblclick', handleDoubleClick);
+
+        function handleClick() {
+            click(1);
+        }
+
+        function handleDoubleClick() {
+            click(2);
+        }
+
+        function click(n) {
+            var fullLayout = gd._fullLayout;
+            var element = path.node();
+            var id = +element.getAttribute('data-index');
+
+            var newShapes = [];
+            for(var q = 0; q < fullLayout.shapes.length; q++) {
+                var shapeIn = fullLayout.shapes[q]._input;
+                if(q !== id) {
+                    newShapes.push(shapeIn);
+                } else if(n === 1) {
+                    // reverse editable status
+                    shapeIn.editable = !shapeIn.editable;
+
+                    newShapes.push(shapeIn);
+                } // otherwise the double-clicked editable shape is removed
+            }
+
+            Registry.call('relayout', gd, {
+                shapes: newShapes
+            });
+        }
     }
 }
 

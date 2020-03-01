@@ -530,15 +530,6 @@ module.exports = {
                 '*vertical* allows vertical extend.'
             ].join(' ')
         },
-        editable: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: true,
-            editType: 'none',
-            description: [
-                'Determines whether new shapes are editable or not.'
-            ].join(' ')
-        },
 
         editType: 'none'
     },

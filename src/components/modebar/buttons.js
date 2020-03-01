@@ -136,7 +136,7 @@ modeBarButtons.lasso2d = {
 
 modeBarButtons.closedfreedraw = {
     name: 'closedfreedraw',
-    title: function(gd) { return _(gd, 'Draw Polygon'); },
+    title: function(gd) { return _(gd, 'Draw Closed Freeform'); },
     attr: 'dragmode',
     val: 'closedfreedraw',
     icon: Icons.closedfreedraw,
@@ -145,7 +145,7 @@ modeBarButtons.closedfreedraw = {
 
 modeBarButtons.openfreedraw = {
     name: 'openfreedraw',
-    title: function(gd) { return _(gd, 'Draw Polyline'); },
+    title: function(gd) { return _(gd, 'Draw Open Freeform'); },
     attr: 'dragmode',
     val: 'openfreedraw',
     icon: Icons.openfreedraw,
