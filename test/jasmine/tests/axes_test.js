@@ -4156,8 +4156,6 @@ describe('Test axes', function() {
                 ]);
             });
 
-            // TODO more pattern values !!
-
             it('should discard coords within [values[i], values[i] + dvalue] bounds', function() {
                 var x = [
                     // Thursday
@@ -4311,9 +4309,6 @@ describe('Test axes', function() {
                     expect(ax._B).withContext(msg).toEqual([]);
                 }
             }
-
-            // TODO
-            // - should pick correct offset during l2p and p2l
 
             it('should locate breaks & compute l <-> p parameters - x-axis case', function(done) {
                 Plotly.plot(gd, [{
