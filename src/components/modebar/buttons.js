@@ -179,6 +179,15 @@ modeBarButtons.ellipsedraw = {
     click: handleCartesian
 };
 
+modeBarButtons.eraseshape = {
+    name: 'eraseshape',
+    title: function(gd) { return _(gd, 'Erase Shape'); },
+    attr: 'dragmode',
+    val: 'eraseshape',
+    icon: Icons.eraseshape,
+    click: handleCartesian
+};
+
 modeBarButtons.zoomIn2d = {
     name: 'zoomIn2d',
     title: function(gd) { return _(gd, 'Zoom in'); },

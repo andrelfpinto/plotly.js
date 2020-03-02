@@ -135,7 +135,9 @@ function drawOne(gd, index) {
                     // reverse editable status
                     shapeIn.editable = !shapeIn.editable;
 
-                    newShapes.push(shapeIn);
+                    if(fullLayout.dragmode !== 'eraseshape') {
+                        newShapes.push(shapeIn);
+                    }
                 } // otherwise the double-clicked editable shape is removed
             }
 
@@ -357,21 +359,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         if(shouldSkipEdits()) return;
 
         removeVisualCues(shapeLayer);
-
-        if(shapeOptions.editable && dragOptions.altKey) {
-            var fullLayout = gd._fullLayout;
-            var element = dragOptions.element;
-            var id = +element.getAttribute('data-index');
-
-            var newShapes = [];
-            for(var q = 0; q < fullLayout.shapes.length; q++) {
-                if(q !== id) newShapes.push(fullLayout.shapes[q]._input);
-            }
-
-            Registry.call('relayout', gd, {
-                shapes: newShapes
-            });
-        }
     }
 
     function moveShape(dx, dy) {

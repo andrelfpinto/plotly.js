@@ -177,7 +177,8 @@ function getButtonGroups(gd) {
             'openfreedraw',
             'linedraw',
             'rectdraw',
-            'ellipsedraw'
+            'ellipsedraw',
+            'eraseshape'
         );
     }
 

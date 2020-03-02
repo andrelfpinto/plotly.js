@@ -54,6 +54,7 @@ module.exports = {
             'linedraw',
             'rectdraw',
             'ellipsedraw',
+            'eraseshape',
             'orbit',
             'turntable',
             false
