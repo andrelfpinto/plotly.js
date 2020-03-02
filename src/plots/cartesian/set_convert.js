@@ -192,6 +192,8 @@ module.exports = function setConvert(ax, fullLayout) {
         if(axLetter === 'y') {
             l2p = function(v) {
                 if(!isNumeric(v)) return BADNUM;
+                if(!ax._breaks.length) return _l2p(v, ax._m, ax._b);
+
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
                     var brk = ax._breaks[i];
@@ -202,6 +204,8 @@ module.exports = function setConvert(ax, fullLayout) {
             };
             p2l = function(px) {
                 if(!isNumeric(px)) return BADNUM;
+                if(!ax._breaks.length) return _p2l(px, ax._m, ax._b);
+
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
                     var brk = ax._breaks[i];
@@ -213,6 +217,8 @@ module.exports = function setConvert(ax, fullLayout) {
         } else {
             l2p = function(v) {
                 if(!isNumeric(v)) return BADNUM;
+                if(!ax._breaks.length) return _l2p(v, ax._m, ax._b);
+
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
                     var brk = ax._breaks[i];
@@ -223,6 +229,8 @@ module.exports = function setConvert(ax, fullLayout) {
             };
             p2l = function(px) {
                 if(!isNumeric(px)) return BADNUM;
+                if(!ax._breaks.length) return _p2l(px, ax._m, ax._b);
+
                 var b = ax._B[0];
                 for(var i = 0; i < ax._breaks.length; i++) {
                     var brk = ax._breaks[i];
@@ -555,32 +563,34 @@ module.exports = function setConvert(ax, fullLayout) {
 
             ax._breaks = ax.locateBreaks(rl0, rl1);
 
-            for(i = 0; i < ax._breaks.length; i++) {
-                brk = ax._breaks[i];
-                ax._lBreaks += (brk.max - brk.min);
-            }
+            if(ax._breaks.length) {
+                for(i = 0; i < ax._breaks.length; i++) {
+                    brk = ax._breaks[i];
+                    ax._lBreaks += (brk.max - brk.min);
+                }
 
-            ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks);
+                ax._m2 = ax._length / (rl1 - rl0 - ax._lBreaks);
 
-            if(axLetter === 'y') {
-                ax._breaks.reverse();
-                // N.B. top to bottom (negative coord, positive px direction)
-                ax._B.push(ax._m2 * rl1);
-            } else {
-                ax._B.push(-ax._m2 * rl0);
-            }
+                if(axLetter === 'y') {
+                    ax._breaks.reverse();
+                    // N.B. top to bottom (negative coord, positive px direction)
+                    ax._B.push(ax._m2 * rl1);
+                } else {
+                    ax._B.push(-ax._m2 * rl0);
+                }
 
-            for(i = 0; i < ax._breaks.length; i++) {
-                brk = ax._breaks[i];
-                ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min));
-            }
+                for(i = 0; i < ax._breaks.length; i++) {
+                    brk = ax._breaks[i];
+                    ax._B.push(ax._B[ax._B.length - 1] - ax._m2 * (brk.max - brk.min));
+                }
 
-            // fill pixel (i.e. 'p') min/max here,
-            // to not have to loop through the _breaks twice during `p2l`
-            for(i = 0; i < ax._breaks.length; i++) {
-                brk = ax._breaks[i];
-                brk.pmin = l2p(brk.min);
-                brk.pmax = l2p(brk.max);
+                // fill pixel (i.e. 'p') min/max here,
+                // to not have to loop through the _breaks twice during `p2l`
+                for(i = 0; i < ax._breaks.length; i++) {
+                    brk = ax._breaks[i];
+                    brk.pmin = l2p(brk.min);
+                    brk.pmax = l2p(brk.max);
+                }
             }
         }
 
@@ -705,6 +715,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 if(brk.bounds) {
                     if(brk.pattern) {
                         bnds = Lib.simpleMap(brk.bounds, cleanNumber);
+                        if(bnds[0] === bnds[1] && op === '()') continue;
 
                         // r0 value as date
                         var r0Date = new Date(r0);
@@ -725,12 +736,10 @@ module.exports = function setConvert(ax, fullLayout) {
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCDay();
                                 r0PatternDelta = b0 - r0Pattern;
-                                bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
-                                // TODO clean this up ... with tests !!
-                                if(op0 === '[' && op1 === ']') bndDelta += ONEDAY;
+                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 7) - b0) * ONEDAY;
+                                if(op1 === ']') bndDelta += ONEDAY;
                                 step = 7 * ONEDAY;
 
-                                console.log(op0, op1, bnds, '-', [b0, b1],
                                 t = r0 + r0PatternDelta * ONEDAY -
                                     r0Date.getUTCHours() * ONEHOUR -
                                     r0Date.getUTCMinutes() * ONEMIN -
@@ -742,7 +751,7 @@ module.exports = function setConvert(ax, fullLayout) {
                                 b1 = bnds[1];
                                 r0Pattern = r0Date.getUTCHours();
                                 r0PatternDelta = b0 - r0Pattern;
-                                bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
+                                bndDelta = (b1 >= b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
                                 step = ONEDAY;
 
                                 t = r0 + r0PatternDelta * ONEHOUR -

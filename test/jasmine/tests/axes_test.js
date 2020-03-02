@@ -4478,6 +4478,60 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
+                        {pattern: '%w', bounds: [6, 0], operation: '[]'}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('break over the weekend days (with operation:[])', 'x', {
+                        breaks: [
+                            ['2020-01-04', '2020-01-06'].map(Lib.dateTime2ms)
+                        ],
+                        m2: 0.000001640946501588664,
+                        B: [-2589304.064, -2589587.619]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
+                        {pattern: '%w', bounds: [4, 6]}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('skip Friday', 'x', {
+                        breaks: [
+                            ['2020-01-03', '2020-01-04'].map(Lib.dateTime2ms)
+                        ],
+                        m2: 0.0000012658730158736563,
+                        B: [-1997456.107, -1997565.478]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
+                        {pattern: '%w', bounds: [5, 5], operation: '[]'}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('skip Friday (operation:[] version)', 'x', {
+                        breaks: [
+                            ['2020-01-03', '2020-01-04'].map(Lib.dateTime2ms)
+                        ],
+                        m2: 0.0000012658730158736563,
+                        B: [-1997456.107, -1997565.478]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
+                        {pattern: '%w', bounds: [5, 5], operation: '()'}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('bad input -> implied empty breaks', 'x', null);
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
                         {pattern: '%H', bounds: [17, 8]}
                     ];
                     return Plotly.react(gd, gd.data, gd.layout);
