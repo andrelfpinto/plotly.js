@@ -4575,6 +4575,29 @@ describe('Test axes', function() {
                 })
                 .then(function() {
                     gd.layout.xaxis.breaks = [
+                        {pattern: '%H', bounds: [17, 8]},
+                        {pattern: '%w', bounds: [5, 1]}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('breaks outside workday hours & weekends (reversed break order)', 'x', {
+                        breaks: [
+                            ['2020-01-02 17:00:00', '2020-01-03 08:00:00'].map(Lib.dateTime2ms),
+                            ['2020-01-03 17:00:00', '2020-01-06 08:00:00'].map(Lib.dateTime2ms),
+                            ['2020-01-06 17:00:00', '2020-01-07 08:00:00'].map(Lib.dateTime2ms),
+                            [Lib.dateTime2ms('2020-01-07 17:00:00'), 1578424728526.6]
+                        ],
+                        m2: 0.000003915071184408763,
+                        B: [
+                            -6177761.798805676, -6177973.212649634,
+                            -6178861.150794258, -6179072.564638216,
+                            -6179105.171412717
+                        ]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
                         {pattern: '%H', bounds: [17, 8]}
                     ];
                     // N.B. xaxis.range[0] falls within a break
@@ -4612,15 +4635,6 @@ describe('Test axes', function() {
                         m2: 0.00000125,
                         B: [-1972296, -1972404, -1972620]
                     });
-                })
-                .then(function() {
-                    // TODO in reverse order, this does not work !
-
-                    // gd.layout.xaxis.breaks = [
-                    //     {pattern: '%H', bounds: [17, 8]},
-                    //     {pattern: '%w', bounds: [5, 1]}
-                    // ];
-                    // return Plotly.react(gd, gd.data, gd.layout);
                 })
                 .catch(failTest)
                 .then(done);
