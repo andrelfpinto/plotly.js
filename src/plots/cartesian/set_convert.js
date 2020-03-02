@@ -730,16 +730,12 @@ module.exports = function setConvert(ax, fullLayout) {
                                 if(op0 === '[' && op1 === ']') bndDelta += ONEDAY;
                                 step = 7 * ONEDAY;
 
-                                if(r0PatternDelta > 0) {
-                                    t = r0 + r0PatternDelta * ONEDAY -
-                                        r0Date.getUTCHours() * ONEHOUR -
-                                        r0Date.getUTCMinutes() * ONEMIN -
-                                        r0Date.getUTCSeconds() * ONESEC -
-                                        r0Date.getUTCMilliseconds();
-                                } else {
-                                    // TODO should we start from r0
-                                    // or have the breaks start before the range?
-                                }
+                                console.log(op0, op1, bnds, '-', [b0, b1],
+                                t = r0 + r0PatternDelta * ONEDAY -
+                                    r0Date.getUTCHours() * ONEHOUR -
+                                    r0Date.getUTCMinutes() * ONEMIN -
+                                    r0Date.getUTCSeconds() * ONESEC -
+                                    r0Date.getUTCMilliseconds();
                                 break;
                             case '%H':
                                 b0 = bnds[0];
@@ -749,24 +745,18 @@ module.exports = function setConvert(ax, fullLayout) {
                                 bndDelta = (b1 > b0 ? b1 - b0 : (b1 + 24) - b0) * ONEHOUR;
                                 step = ONEDAY;
 
-                                if(r0PatternDelta > 0) {
-                                    t = r0 + r0PatternDelta * ONEHOUR -
-                                        r0Date.getUTCMinutes() * ONEMIN -
-                                        r0Date.getUTCSeconds() * ONESEC -
-                                        r0Date.getUTCMilliseconds();
-                                } else {
-                                    // TODO should we start from r0
-                                    // or have the breaks start before the range?
-                                }
+                                t = r0 + r0PatternDelta * ONEHOUR -
+                                    r0Date.getUTCMinutes() * ONEMIN -
+                                    r0Date.getUTCSeconds() * ONESEC -
+                                    r0Date.getUTCMilliseconds();
                                 break;
                         }
 
-                        // TODO we need to remove decimal (most often found
-                        // in auto ranges) for this to work correctly,
-                        // should this be Math.floor, Math.ceil or
-                        // Math.round ??
-
                         while(t <= r1) {
+                            // TODO we need to remove decimal (most often found
+                            // in auto ranges) for this to work correctly,
+                            // should this be Math.floor, Math.ceil or
+                            // Math.round ??
                             addBreak(Math.floor(t), Math.floor(t + bndDelta));
                             t += step;
                         }

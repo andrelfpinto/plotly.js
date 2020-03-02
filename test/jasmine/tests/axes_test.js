@@ -4353,9 +4353,46 @@ describe('Test axes', function() {
                     });
                 })
                 .then(function() {
-                    // TODO
-                    // - breaks with bounds beyond range
-                    //
+                    gd.layout.xaxis.breaks = [
+                        {bounds: [-10, 89]},
+                        {bounds: [101, 189]}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('break beyond xaxis.range[0]', 'x', {
+                        breaks: [[88.58620689655173, 89], [101, 189]],
+                        m2: 22.118644067796602,
+                        B: [-1959.406, -1968.559, -3914.999]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
+                        {bounds: [11, 89]},
+                        {bounds: [101, 300]}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('break beyond xaxis.range[1]', 'x', {
+                        breaks: [[11, 89], [101, 101.41379310344827]],
+                        m2: 22.118644067796616,
+                        B: [31.271, -1693.983, -1703.135]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
+                        {bounds: [-11, 90]},
+                        {bounds: [101, 300]}
+                    ];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('both breaks beyond xaxis.range', 'x', {
+                        breaks: [[89.35736677115987, 90]],
+                        m2: 50.73932253313696,
+                        B: [-4533.9322, -4566.539]
+                    });
                 })
                 .catch(failTest)
                 .then(done);
@@ -4485,6 +4522,46 @@ describe('Test axes', function() {
                             -6178861.150794258, -6179072.564638216,
                             -6179105.171412717
                         ]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
+                        {pattern: '%H', bounds: [17, 8]}
+                    ];
+                    // N.B. xaxis.range[0] falls within a break
+                    gd.layout.xaxis.autorange = false;
+                    gd.layout.xaxis.range = ['2020-01-01 20:00:00', '2020-01-04 20:00:00'];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('when range[0] falls within a break pattern (%H case)', 'x', {
+                        breaks: [
+                            [1577908800000, Lib.dateTime2ms('2020-01-02 08:00:00')],
+                            ['2020-01-02 17:00:00', '2020-01-03 08:00:00'].map(Lib.dateTime2ms),
+                            ['2020-01-03 17:00:00', '2020-01-04 08:00:00'].map(Lib.dateTime2ms),
+                            ['2020-01-04 17:00:00', '2020-01-04 20:00:00'].map(Lib.dateTime2ms)
+                        ],
+                        m2: 0.000005555555555555556,
+                        B: [-8766160, -8766400, -8766700, -8767000, -8767060]
+                    });
+                })
+                .then(function() {
+                    gd.layout.xaxis.breaks = [
+                        {pattern: '%w', bounds: [1, 4]}
+                    ];
+                    // N.B. xaxis.range[0] falls within a break
+                    gd.layout.xaxis.autorange = false;
+                    gd.layout.xaxis.range = ['2020-01-01', '2020-01-09'];
+                    return Plotly.react(gd, gd.data, gd.layout);
+                })
+                .then(function() {
+                    _assert('when range[0] falls within a break pattern (%w case)', 'x', {
+                        breaks: [
+                            ['2020-01-01 00:00:00', '2020-01-02 00:00:00'].map(Lib.dateTime2ms),
+                            ['2020-01-07 00:00:00', '2020-01-09 00:00:00'].map(Lib.dateTime2ms)
+                        ],
+                        m2: 0.00000125,
+                        B: [-1972296, -1972404, -1972620]
                     });
                 })
                 .then(function() {
